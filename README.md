@@ -1,6 +1,6 @@
 # t-digest
 
-Accurate percentiles of a huge stream (p50, p99, p99.9 latency and the like) from a summary of about 60 numbers, in plain Python and NumPy.
+Accurate percentiles of a huge stream (p50, p99, p99.9 latency and the like) from a summary of about 60 centroids (120 numbers), in plain Python and NumPy.
 This is the merging t-digest of Dunning & Ertl (2019), written from scratch.
 
 ## The idea
