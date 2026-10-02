@@ -31,8 +31,7 @@ qs = [0.01, 0.5, 0.99, 0.999]
 
 # Build tdigest (add point-by-point for compatibility)
 td = TDigest()
-for x in data:
-    td.add(x)
+td.add_batch(data)
 
 # Compute exact vs approximate
 exact = [np.percentile(data, q * 100) for q in qs]
@@ -47,10 +46,13 @@ for a, e in zip(approx, exact):
         errors.append(abs(a - e))
 
 # Print table
-print(f"{'Quantile':<10} {'Exact':<15} {'Approx':<15} {'Rel Error (%)':<15}")
-print("-" * 55)
-for q, e, a, err in zip(qs, exact, approx, errors):
-    print(f"{q:<10.4f} {e:<15.4f} {a:<15.4f} {err*100:<15.4f}")
+srt = np.sort(data)
+ranks = [np.searchsorted(srt, a) / len(srt) for a in approx]
+print(f"{len(data)} lognormal points, {td.centroid_count()} centroids")
+print(f"{'Quantile':<10} {'Exact':<12} {'Approx':<12} {'Value err %':<12} {'Rank err %':<10}")
+print("-" * 58)
+for q, e, a, err, r in zip(qs, exact, approx, errors, ranks):
+    print(f"{q:<10.4f} {e:<12.4f} {a:<12.4f} {err*100:<12.3f} {abs(r - q)*100:<10.4f}")
 
 # Save plot
 if HAS_MATPLOTLIB:

@@ -101,3 +101,25 @@ def test_single_element():
     assert td.quantile(0.0) == 42.0
     assert td.quantile(0.5) == 42.0
     assert td.quantile(1.0) == 42.0
+
+
+def test_tails_accurate_and_compact():
+    """k1 scale: tail quantiles within 0.1% rank error while storing well under 200 centroids."""
+    data = np.random.default_rng(7).lognormal(0, 1, 100000)
+    td = TDigest(compression=100)
+    td.add_batch(data)
+    s = np.sort(data)
+    for q in [0.001, 0.01, 0.99, 0.999]:
+        rank = np.searchsorted(s, td.quantile(q)) / len(s)
+        assert abs(rank - q) < 0.001, (q, rank)
+    assert td.centroid_count() < 200
+
+
+def test_merge_keeps_weight_and_cdf_inverts_quantile():
+    rng = np.random.default_rng(3)
+    a, b = TDigest(100), TDigest(100)
+    a.add_batch(rng.standard_normal(20000)); b.add_batch(rng.standard_normal(30000) + 1)
+    a.merge(b)
+    assert abs(a._total_weight - 50000) < 1e-6
+    for q in [0.05, 0.5, 0.95]:
+        assert abs(a.cdf(a.quantile(q)) - q) < 0.01
