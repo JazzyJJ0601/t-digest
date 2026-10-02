@@ -25,9 +25,9 @@ Error is rank error: how far the estimate's true position in the stream is from 
 | First version of this repo | 6,589 | 266 | 618 | 638 | 350 | 260 |
 | Random sample, same memory | 119 | 7,502 | 11,368 | 50,018 | 4,134 | 3,114 |
 
-On normal and uniform data the picture is the same (all rows in `results/compare.json`): the t-digest stays between 120 and 550 ppm at every quantile, while a random sample of equal size is 3,000 to 68,000 ppm off.
+On normal and uniform data the picture is the same (all rows in `results/compare.json`): the t-digest stays between 120 and 550 ppm at every quantile, while a random sample of equal size is 5,000 to 68,000 ppm off.
 
-- Against a random sample of the same size: 10 to 100 times smaller error.
+- Against a random sample of the same size: 10 to 270 times smaller error, depending on distribution and quantile.
 - Against this repo's first version (nearest-cluster merging with a flat 100-point cap, kept in `results/naive_digest.py`): about the same error with 55 times less memory, and 120 times faster to build (0.07 s vs 8.5 s for 100,000 points).
 
 ## Limits
